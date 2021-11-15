@@ -19,6 +19,9 @@ A = np.array([[   4,  -1,  -5],
               dtype=np.float64)
 b = np.array([-5, 19, -39], dtype=np.float64)
 
+A = np.array([[1e-5, 1e-5], [2, 3]], dtype=np.float64)
+b = np.array([1e-5, 1], dtype=np.float64)
+
 show_steps = True  # Ob die Zwischenresultate ausgegeben werden sollen
 number_format = "{b:8.2f}"  # Formatierung der Zahl bei der Ausgabe von Matrizen
 """==============================================="""
@@ -165,3 +168,5 @@ print(R)
 print('\nLösung des Gleichungssystems ist: ')
 for i in range(len(x)):
     print("x{a} = {b:5.2f}".format(a=i, b=x[i]), end='\t')
+
+print("\n\nLösung mit numpy.linalg.solve: x = " + str(np.linalg.solve(A, b)))

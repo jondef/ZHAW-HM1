@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Nov  1 13:21:19 2020
-
 Lineares Gleichungssystem LGS Ax = b direkt mit Gauss-Algorithmus lösen und Determinante von A berechnen
 
-MIT SPALTENPIVOTISIERUNG
+OHNE SPALTENPIVOTISIERUNG, je nach Input mit Präzision 32 Bit oder 64 Bit Gleitkommazahl
 
 @author: IT19ta_WIN / zahlesev@students.zhaw.ch
+@version: 1.1, 25.01.2021
 """
 
 
@@ -59,8 +58,8 @@ def create_upper_triangle_matrix(R, v, row_inversion_count):
     if R.shape[0] == 1 and R.shape[1] == 1:
         return 0
 
-    # If largest value in column is not in first row, switch rows to improve condition / reduce error
-    row_inversion_count += switch_rows_for_column_pivoting(R, v)
+    # Ensure that there is no zero in top left cell
+    row_inversion_count += ensure_non_zero_leading_element(R, v)
 
     # Create zeros in first column
     for row in range(1, R.shape[0]):
@@ -80,38 +79,38 @@ def create_upper_triangle_matrix(R, v, row_inversion_count):
     return row_inversion_count
 
 
-def switch_rows_for_column_pivoting(R, v):
+def ensure_non_zero_leading_element(R, v):
+    non_zero_row_found = False
     row_inversion_count = 0
 
-    pivot = 0
-    pivot_row = 0
-
-    for row in range(R.shape[0]):
-        if abs(R[row, 0]) > pivot:
-            pivot = abs(R[row, 0])
-            pivot_row = row
-
-    if pivot == 0:
-        raise Exception('All elements in first column are zero. System has no single solution.')
-
-    if pivot_row > 0:
-        # Switch pivot row with first row
-        r_copy = np.copy(R)
-        R[0, :] = r_copy[pivot_row, :]
-        R[pivot_row, :] = r_copy[0, :]
-
-        v_copy = np.copy(v)
-        v[0] = v_copy[pivot_row]
-        v[pivot_row] = v_copy[0]
-
-        row_inversion_count += 1
-        if show_steps:
-            print("|Pivot| ist " + str(pivot) + " --> Vertausche Zeile 1 mit Zeile " + str(pivot_row + 1) + ".")
-            print_extended_matrix(R, v)
-
-    else:
+    if R[0, 0] != 0:
         if show_steps:
             print("Keine Zeilenvertauschungen notwendig!")
+        return row_inversion_count
+
+    for row in range(R.shape[0]):
+        if R[row, 0] == 0:
+            continue
+
+        # Switch non-zero row with first row
+        r_copy = np.copy(R)
+        R[0, :] = r_copy[row, :]
+        R[row, :] = r_copy[0, :]
+
+        v_copy = np.copy(v)
+        v[0] = v_copy[row]
+        v[row] = v_copy[0]
+
+        if show_steps:
+            print("Vertausche Zeile 1 mit Zeile " + str(row + 1) + ".")
+            print_extended_matrix(R, v)
+
+        non_zero_row_found = True
+        row_inversion_count += 1
+        break
+
+    if not non_zero_row_found:
+        raise Exception('All elements in first column are zero. System has no single solution.')
 
     return row_inversion_count
 
@@ -152,7 +151,6 @@ def print_extended_matrix(R, v):
         out += "\n"
 
     print(out)
-
 
 """
 MAIN PROGRAM

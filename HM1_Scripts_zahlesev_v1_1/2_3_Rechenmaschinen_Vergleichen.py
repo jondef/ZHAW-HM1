@@ -20,10 +20,10 @@ n2 = 14  # Anzahl Mantisse-Stellen der zweiten Rechenmaschine
 print("Genauigkeit einer Rechenmaschine eps = B/2 * B^(-n) bei Basis B und n Mantisse-Stellen.\n")
 
 eps1 = (Decimal(b1) / Decimal(2)) * (Decimal(b1)**Decimal(-n1))
-print("eps1 = " + str(eps1))
+print("eps1 = " + str(b1) + "/2 * " + str(b1) + "^-" + str(n1) + " = " + str(eps1))
 
 eps2 = (Decimal(b2) / Decimal(2)) * (Decimal(b2)**Decimal(-n2))
-print("eps2 = " + str(eps2))
+print("eps2 = " + str(b2) + "/2 * " + str(b2) + "^-" + str(n2) + " = " + str(eps2))
 
 print("\nDiejenige Maschine mit kleinerem Epsilon (eps) rechnet genauer.")
 

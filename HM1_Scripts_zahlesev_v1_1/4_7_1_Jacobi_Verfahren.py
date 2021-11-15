@@ -58,7 +58,7 @@ def is_converging(B):
     nb = np.linalg.norm(B, np.inf)
 
     if show_steps:
-        print("Iteration auf Konvergenz prüfen. Iteration konvergiert, wenn ‖B‖ < 0. ‖B‖ = " + str(nb))
+        print("Iteration auf Konvergenz prüfen. Iteration konvergiert, wenn ‖B‖ < 1. ‖B‖ = " + str(nb))
 
     return nb < 1
 

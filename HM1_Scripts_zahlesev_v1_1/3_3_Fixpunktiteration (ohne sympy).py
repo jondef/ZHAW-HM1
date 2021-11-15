@@ -1,5 +1,3 @@
-import sympy as sy
-from decimal import Decimal
 import matplotlib.pyplot as plt
 import math
 
@@ -15,10 +13,8 @@ der Abbildung. Was stellen Sie bzgl. der Nullstelle in [0, 1] fest? Weshalb?
 @author: zahlesev
 """
 
-x = sy.symbols('x')
-
 """==================== INPUT ===================="""
-F = (1.0/221.0) * (230.0 * x ** 4.0 + 18.0 * x ** 3.0 + 9.0 * x ** 2.0 - 9.0)  # Linke Seite der Fixpunktgleichung F(x) = x
+def F(x): return (1.0/221.0) * (230.0 * x ** 4.0 + 18.0 * x ** 3.0 + 9.0 * x ** 2.0 - 9.0)  # Linke Seite der Fixpunktgleichung F(x) = x
 x0 = 0  # Startwert der Iteration. (Setze x0 = 1 für divergierenden Fixpunkt in [0, 1])
 precision = 1e-6  # Wie genau die Lösung sein soll. Bei 10^-6 = 1e-6
 min_iterations = 5  # Minimale Anzahl Iterationen bei divergierenden Folgen, bevor abgebrochen wird.
@@ -31,14 +27,14 @@ ap = -1; bp = 1  # Intervall, über welchem geplottet werden soll.
 # Plot F(x) and x
 if show_plots:
     steps = 1000
-    d = (Decimal(bp) - Decimal(ap)) / steps
+    d = (bp - ap) / steps
 
     xvalues = []
     yvalues = []
 
     for i in range(steps + 1):
-        xvalue = Decimal(ap) + i * d
-        yvalue = F.subs(x, xvalue)
+        xvalue = ap + i * d
+        yvalue = F(xvalue)
 
         xvalues.append(xvalue)
         yvalues.append(yvalue)
@@ -56,7 +52,7 @@ if show_plots:
 
 print("FIXPUNKTITERATION")
 print("=================")
-xn = [x0, F.subs(x, x0)]
+xn = [x0, F(x0)]
 
 print("Δ := Differenz zwischen den letzten zwei Resultaten.\n")
 
@@ -67,7 +63,7 @@ n = 1
 while abs(xn[n] - xn[n-1]) > precision:
     n += 1
 
-    xn.append(F.subs(x, xn[n-1]))
+    xn.append(F(xn[n-1]))
 
     if n > min_iterations and xn[n] > xn[n-1]:
         print("Folge divergiert! Kein Fixpunkt!")

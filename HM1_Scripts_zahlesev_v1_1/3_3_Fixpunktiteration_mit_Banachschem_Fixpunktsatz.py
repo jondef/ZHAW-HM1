@@ -18,7 +18,7 @@ des Banachschen Fixpunktsatzes erfüllt sind und bestimmen Sie α.
 c) Wie häufig müssten Sie gemäss der a-priori Fehlerabschätzung iterieren, damit der absolute Fehler für x1 kleiner
 als 10^−9 wird?'
 
-@version: 1.0, 23.01.2021
+@version: 1.1, 25.01.2021
 @author: zahlesev
 """
 
@@ -46,14 +46,17 @@ show_plots = True
 ap = -1; bp = 1  # Intervall, über welchem geplottet werden soll.
 """==============================================="""
 
+
 def check_banach(F, x, a, b, show_plots):
     print("Prüfen, ob der Banach'sche Fixpunktsatz erfüllt ist:")
     print("1. Bedingung: F(x) bildet [" + str(a) + ", " + str(b) + "] auf [" + str(a) + ", " + str(b) + "] ab.")
-    print("2. Bedingung: F(x) ist Lipschitz-stetig, d.h. |F(x) - F(y)| <= α * |x - y| ∀ x, y ∈ [" + str(a) + ", " + str(b) + "]\n")
+    print("2. Bedingung: Es existiert ein α = max(|F'(x0)|), mit " + str(a) + " <= x0 <= " + str(b) + " so dass 0 < α < 1")
+    print("3. Bedingung (Prüfung optional, da schwierig zu zeigen): F(x) ist Lipschitz-stetig, d.h. |F(x) - F(y)| <= α * |x - y| ∀ x, y ∈ [" + str(a) + ", " + str(b) + "]\n")
 
     steps = 1000
     d = (Decimal(b) - Decimal(a)) / steps
     print("Prüfen der ersten Bedingung: Finde maximalen und minimalen Wert von F(x) im Intervall [" + str(a) + ", " + str(b) + "], mit Python, indem " + str(steps + 1) + " äquidistante Werte im Intervall berechnet werden.\n")
+    print("Für die Bestimmung der x-Werte, an welchem F(x) maximal / minimal wird, kann i.d.R. mit der Monotonie der Funktion agrumentiert werden (\"F(x) ist monoton steigend --> F(x) ist maximal an rechter Intervallgrenze\")")
 
     xvalues = []
     yvalues = []
@@ -118,6 +121,7 @@ def check_banach(F, x, a, b, show_plots):
     alpha = ymax
 
     print("Maximaler Wert von F'(x0) in [" + str(a) + ", " + str(b) + "]: F'(" + str(xmax) + ") = α = " + str(alpha.evalf()))
+    print("Für die Bestimmung des x-Werts, an welchem F'(x) maximal wird, kann i.d.R. mit der Monotonie der Funktion agrumentiert werden (\"F'(x) ist monoton steigend --> F'(x) ist maximal an rechter Intervallgrenze\")")
 
     if show_plots:
         plt.figure(2)
@@ -130,7 +134,14 @@ def check_banach(F, x, a, b, show_plots):
         plt.title("F'(x) über [" + str(a) + ", " + str(b) + "]")
         plt.show()
 
-    print("Überprüfung der Lipschitz-Stetigkeit |F(x) - F(y)| <= α * |x - y| ∀ x, y ∈ [" + str(a) + ", " + str(b) + "], entweder anschaulich durch Plot, oder numerisch grobe Prüfung mit Python.\n")
+    if 0 < alpha < 1:
+        print("\n==> Für α = " + str(alpha) + " gilt 0 < α < 1. Somit ist die zweite Bedingung erfüllt.")
+    else:
+        print("\n==> Für α = " + str(alpha) + " gilt 0 < α < 1 NICHT. Somit ist die zweite Bedingung NICHT erfüllt.")
+
+
+    print("\nPrüfen der dritten Bedingung (optional):  Lipschitz-Stetigkeit |F(x) - F(y)| <= α * |x - y| ∀ x, y ∈ [" + str(a) + ", " + str(b) + "], ")
+    print("entweder anschaulich durch Plot, oder numerisch grobe Prüfung mit Python (wird durch dieses Skript durchgeführt).\n")
 
     steps = int(math.sqrt(1000))
     d = (Decimal(b) - Decimal(a)) / steps
@@ -194,9 +205,10 @@ if check_banach_and_calculate_estimations:
     if alpha > 0:
         # a-priori estimation
         print("A-Priori-Abschätzung: Finde n, so dass (α^n / (1 - α)) * |x1 - x0| <= a-priori-Fehler")
+        print("=> n ≥ ln((max_fehler * (1 - α)) / (|x1 - x0|)) / ln(α)")
 
         n_apriori = math.ceil((math.log((max_a_priori_error * (1 - alpha)) / (abs(F.subs(x, x0) - x0)))) / (math.log(alpha)))
-        print("=> Aus A-Priori-Abschätzung folgt, dass absoluter Fehler < " + str(max_a_priori_error) + " für alle n >= " + str(n_apriori) + ".\n\n")
+        print("=> Aus A-Priori-Abschätzung folgt, dass absoluter Fehler < " + str(max_a_priori_error) + " ist, für alle n ≥ " + str(n_apriori) + ".\n\n")
 
 
 
@@ -220,7 +232,7 @@ while abs(xn[n] - xn[n-1]) > precision:
 
     xn.append(F.subs(x, xn[n-1]))
 
-    if n > min_iterations and xn[n] > xn[0]:
+    if n > min_iterations and xn[n] - xn[n-1] > xn[n-1] - xn[n-2]:
         print("Folge divergiert! Kein Fixpunkt!")
         break
 

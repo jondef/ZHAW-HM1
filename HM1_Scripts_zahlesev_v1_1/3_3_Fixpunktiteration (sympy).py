@@ -18,6 +18,7 @@ der Abbildung. Was stellen Sie bzgl. der Nullstelle in [0, 1] fest? Weshalb?
 x = sy.symbols('x')
 
 """==================== INPUT ===================="""
+# ACHTUNG: Für Funktionen wie cos usw die Sympy-Befehle brauchen, z.B. sy.cos(), sy.exp() usw.
 F = (1.0/221.0) * (230.0 * x ** 4.0 + 18.0 * x ** 3.0 + 9.0 * x ** 2.0 - 9.0)  # Linke Seite der Fixpunktgleichung F(x) = x
 x0 = 0  # Startwert der Iteration. (Setze x0 = 1 für divergierenden Fixpunkt in [0, 1])
 precision = 1e-6  # Wie genau die Lösung sein soll. Bei 10^-6 = 1e-6

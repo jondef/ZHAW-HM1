@@ -1,5 +1,5 @@
 """
-    Iteratives Lösen eines LGS Ax = b mit Jacobi-Verfahren
+    Iteratives Lösen eines LGS Ax = b mit Gauss-Seidel-Verfahren
 
     @version: 1.0, 24.01.2021
     @author: zahlesev@students.zhaw.ch
@@ -17,7 +17,7 @@ show_steps = True
 """==============================================="""
 
 
-def solve_jacobi(A, b, x0, tol):
+def solve_gauss_seidel(A, b, x0, tol):
     if not (A.shape[0] == A.shape[1]):
         raise Exception('A is misshaped.')
 
@@ -34,7 +34,7 @@ def solve_jacobi(A, b, x0, tol):
     elif show_steps:
         print("Iteration konvergiert!")
 
-    x = iterate_jacobi(A, B, b, x0, tol)
+    x = iterate_gauss_seidel(A, B, b, x0, tol)
 
     n2 = calculate_required_steps_a_priori(B, x0, x[1], tol)
 
@@ -46,10 +46,10 @@ def get_b(A):
     L = np.tril(A, -1)
     R = np.triu(A, 1)
 
-    B = -np.linalg.inv(D) @ (L + R)
+    B = -np.linalg.inv(D + L) @ R
 
     if show_steps:
-        print("Matrix B berechnen. B = -D⁻¹ * (L + R) = \n" + str(B))
+        print("Matrix B berechnen. B = -(D + L)⁻¹ * R = \n" + str(B))
 
     return B
 
@@ -58,12 +58,12 @@ def is_converging(B):
     nb = np.linalg.norm(B, np.inf)
 
     if show_steps:
-        print("Iteration auf Konvergenz prüfen. Iteration konvergiert, wenn ‖B‖ < 0. ‖B‖ = " + str(nb))
+        print("Iteration auf Konvergenz prüfen. Iteration konvergiert, wenn ‖B‖ < 1. ‖B‖ = " + str(nb))
 
     return nb < 1
 
 
-def iterate_jacobi(A, B, b, x0, tol):
+def iterate_gauss_seidel(A, B, b, x0, tol):
     dim = b.shape[0]  # matrix size
     x = [x0]  # array of all step results x0, x1, ... xn
     err = 'N/A'
@@ -74,7 +74,9 @@ def iterate_jacobi(A, B, b, x0, tol):
             sum_ = 0
             for j in range(dim):
                 if i == j: continue
-                sum_ += A[i, j] * x[-1][j]
+
+                xj = x_curr[j] if j < i else x[-1][j]
+                sum_ += A[i, j] * xj
 
             x_curr[i] = (1 / A[i, i]) * (b[i] - sum_)
 
@@ -100,10 +102,10 @@ def calculate_required_steps_a_priori(B, x0, x1, tol):
     return n_min
 
 
-xn, n, n2 = solve_jacobi(A, b, x0, tol)
+xn, n, n2 = solve_gauss_seidel(A, b, x0, tol)
 
 print("\n==========================")
-print('Lösung des Gleichungssystems durch Jacobi:')
+print('Lösung des Gleichungssystems durch Gauss-Seidel:')
 print('x = ' + str(xn))
 print('Benötigte Iterationen: n = ' + str(n))
 print('Theoretisch min. benötigte Iterationen gem. a-priori-Abschätzung: n2 = ' + str(n2))

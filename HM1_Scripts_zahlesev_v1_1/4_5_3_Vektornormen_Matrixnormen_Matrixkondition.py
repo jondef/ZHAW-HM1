@@ -33,6 +33,14 @@ print("Zeilensummennorm ‖A‖∞ = " + str(niA))
 print("")
 
 Ainv = np.linalg.inv(A)
+print("A⁻¹ = \n" + str(Ainv))
+
 niAinv = np.max([np.sum([abs(aij) for aij in Ainv[i, :]]) for i in range(Ainv.shape[0])])
-condA = niA * niAinv
-print("cond(A)∞ = ‖A‖∞ * ‖A⁻¹‖∞ = " + str(condA))
+condAi = niA * niAinv
+print("‖A⁻¹‖∞ = " + str(niAinv))
+print("Kondition bez. ∞-Norm: cond(A)∞ = ‖A‖∞ * ‖A⁻¹‖∞ = " + str(condAi))
+
+n1Ainv = np.max([np.sum([abs(aij) for aij in Ainv.T[j, :]]) for j in range(Ainv.shape[1])])
+condA1 = n1A * n1Ainv
+print("‖A⁻¹‖₁ = " + str(n1Ainv))
+print("Kondition bez. 1-Norm: cond(A)₁ = ‖A‖₁ * ‖A⁻¹‖₁ = " + str(condA1))
